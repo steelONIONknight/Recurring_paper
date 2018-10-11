@@ -25,12 +25,12 @@ $P_{1}$ (1)
 
 `一个矩阵的输入`
 
-$$\left[
+\left[
     \begin
     {matrix}
     1 & 2&3 \\ 2 & 3& 1\\1 & 2 & 1
     \end{matrix}
-\right]$$(1)
+\right]
 
 $$
 \left[

@@ -3,9 +3,12 @@ import torch.nn as nn
 import torch.nn.init as init
 import torchvision
 import torchvision.models as models
+import torchvision.transforms as transforms
 import time
 import numpy as np
 import math
+learning_rate=0.0001
+train_epochs=500
 
 class VGG(nn.Module):
     '''
@@ -73,3 +76,63 @@ trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
                                         download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=32,
                                         shuffle=True, num_workers=4)  
+validationset = torchvision.datasets.CIFAR10(root='./data', train=False,
+                                    download=True, transform=transform)
+validationloader = torch.utils.data.DataLoader(validationset, batch_size=32,
+                                        shuffle=False, num_workers=4)
+net=vgg16()
+
+criterion = torch.nn.CrossEntropyLoss()
+#optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate)
+optimizer=torch.optim.SGD(net.parameters(),lr=learning_rate)
+def train_epoch():
+    # start_time=time.time()
+    training_loss=0.0
+    total_image=0
+    train_correct=0
+    for i,data in enumerate(trainloader,0):
+        inputs,labels=data
+        #copy my tensor to gpus
+        inputs,labels=inputs.cuda(),labels.cuda()
+        optimizer.zero_grad()
+        outputs=net(inputs)
+        loss=criterion(outputs,labels)
+        loss.backward()
+        optimizer.step()
+        _,predicted=torch.max(outputs,1)
+        total_image+=labels.size(0)
+        train_correct+=(predicted==labels).sum().item()
+        training_loss+=loss.item()
+    return training_loss/2000,int(100*train_correct/total_image)
+def validation_epoch():
+    validation_loss=0.0
+    validation_correct=0
+    total_image=0
+    #注意，在验证集上进行结果的计算用torch.no_grad()，禁止模型的参数更新，同时不需要误差的反向传播
+    with torch.no_grad():
+        for i,data in enumerate(validationloader,0):
+            inputs,labels=data
+            inputs,labels=inputs.cuda(),labels.cuda()
+            outputs=net(inputs)
+            loss=criterion(outputs,labels)
+            _,predicted=torch.max(outputs,1)
+            validation_loss+=loss.item()
+            total_image+=labels.size(0)
+            validation_correct+=(predicted==labels).sum().item()
+    return validation_loss/2000,int(100*validation_correct/total_image)
+def main():
+    for epoch in range(train_epochs):
+        start_time=time.time()
+        tra_loss,tra_acc=train_epoch()
+        val_loss,val_acc=validation_epoch()
+        end_time=time.time()-start_time
+        print(net.parameters())
+        print("Epoch "+str(epoch + 1)+" of "+str(train_epochs)+" took   "+str(end_time)+"s")
+        print("  training loss:                   "+str(tra_loss))
+        print("  train accuracy rate:            "+str(tra_acc)+"%")
+        print("  validation loss:                 "+str(val_loss))
+        print("  validation accuracy rate:       "+str(val_acc)+"%")
+
+
+if __name__ == '__main__':
+    main()
