@@ -7,7 +7,7 @@ import torchvision.transforms as transforms
 import time
 import numpy as np
 import math
-learning_rate=0.1
+learning_rate=0.1#0.01 overfitting
 train_epochs=500
 weight_tensor=[]
 print("----------------------hyperparameter---------------------------")
