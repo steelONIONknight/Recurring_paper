@@ -7,11 +7,15 @@ import torchvision.transforms as transforms
 import time
 import numpy as np
 import math
-learning_rate=0.1#0.01 overfitting
+learning_rate=0.01
 train_epochs=500
-weight_tensor=[]
+weight_decay=0.0004
+lr_decay=0
+milestones=[50,200,300,400]
 print("----------------------hyperparameter---------------------------")
 print("learning rate {:f}".format(learning_rate))
+print("weight decay {:f}".format(weight_decay))
+print("learning dacay {:f}".format(lr_decay))
 print("---------------------------------------------------------------")
 class VGG(nn.Module):
     '''
@@ -108,9 +112,8 @@ net._initialize_weights()
 # net.load_state_dict(net_dict)
 net.cuda()
 criterion = torch.nn.CrossEntropyLoss()
-
-optimizer=torch.optim.SGD(net.parameters(),lr=learning_rate)
-
+optimizer=torch.optim.SGD(net.parameters(),lr=learning_rate,weight_decay=weight_decay)
+#scheduler=torch.optim.lr_scheduler.MultiStepLR(optimizer,milestones,gamma=lr_decay)
 def train_epoch():
     # start_time=time.time()
     training_loss=0.0
@@ -124,6 +127,7 @@ def train_epoch():
         outputs=net(inputs)
         loss=criterion(outputs,labels)
         loss.backward()
+        #scheduler.step()
         optimizer.step()
         _,predicted=torch.max(outputs,1)
         total_image+=labels.size(0)
