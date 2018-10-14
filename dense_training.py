@@ -155,11 +155,11 @@ def main():
         tra_loss,tra_acc=train_epoch()
         val_loss,val_acc=validation_epoch()
         end_time=time.time()-start_time
-        print("Epoch "+str(epoch + 1)+" of "+str(train_epochs)+" took   "+str(end_time)+"s")
-        print("  training loss:                   "+str(tra_loss))
-        print("  train accuracy rate:            "+str(tra_acc)+"%")
-        print("  validation loss:                 "+str(val_loss))
-        print("  validation accuracy rate:       "+str(val_acc)+"%")
+        print("  ---------Epoch {:d} of {:d} took {:.3f}s-----".format(epoch+1,train_epochs,end_time))
+        print("  training loss:                   {:.4f}".format(tra_loss))
+        print("  train accuracy rate:            {:.3f}%".format(tra_acc))
+        print("  validation loss:                 {:.4f}".format(val_loss))
+        print("  validation accuracy rate:       {:.3f}%".format(val_acc))
     torch.save(net.state_dict(),'vgg16_parametes.pth')
     
 if __name__ == '__main__':
