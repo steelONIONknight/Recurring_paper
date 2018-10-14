@@ -74,4 +74,4 @@ def plot_slurm(filename,filename2=None):
         # plt.xlabel('epoch')
         # plt.ylabel('learning_rate')
         # plt.show()
-plot_slurm(r'D:\my_gitRepository\Recurring_paper\slurm-17100.out')
+
