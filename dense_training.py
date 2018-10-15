@@ -133,7 +133,7 @@ def train_epoch():
         total_image+=labels.size(0)
         train_correct+=(predicted==labels).sum().item()
         training_loss+=loss.item()
-    return training_loss/(index+1),int(100*train_correct/total_image)
+    return training_loss/(index+1),100.0*train_correct/total_image
 def validation_epoch():
     validation_loss=0.0
     validation_correct=0
@@ -148,7 +148,7 @@ def validation_epoch():
             validation_loss+=loss.item()
             total_image+=labels.size(0)
             validation_correct+=(predicted==labels).sum().item()
-    return validation_loss/(index+1),int(100*validation_correct/total_image)
+    return validation_loss/(index+1),100.0*validation_correct/total_image
 def main():
     for epoch in range(train_epochs):
         start_time=time.time()
